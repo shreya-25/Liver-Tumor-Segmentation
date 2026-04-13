@@ -1,24 +1,30 @@
-# Liver Tumor Segmentation
+# Liver Tumor Segmentation with Synthetic Tumor Augmentation
 
-This repository presents a deep learning-based approach for **liver and tumor segmentation from CT scans**. It includes model training, testing, and a synthetic image generation pipeline to support experimentation in medical image analysis and improve segmentation performance on challenging tumor regions.
+This repository presents a deep learning-based pipeline for **liver and tumor segmentation from CT scans**, with a strong focus on **synthetic data generation for medical image augmentation**.
 
-The project is built in **Python** and focuses on automated segmentation workflows using an **AIM-UNet-based architecture**, along with preprocessing, augmentation, and evaluation steps for volumetric medical imaging data.
+A key part of this project is a **multi-GAN-based 3D synthetic tumor generation pipeline**. Instead of relying only on original tumor scans, the workflow generates **3D synthetic tumor volumes and corresponding masks** using multiple GAN components, and then **inserts these synthetic tumors into healthy liver regions within real CT volumes**. The inserted tumors are blended into the surrounding liver tissue to create more realistic augmented samples for segmentation model training. :contentReference[oaicite:3]{index=3} :contentReference[oaicite:4]{index=4} :contentReference[oaicite:5]{index=5}
 
 ## Project Overview
 
-Accurate liver and tumor segmentation plays an important role in computer-aided diagnosis, treatment planning, and disease monitoring. This repository explores a segmentation pipeline designed to identify liver and tumor regions from CT volumes using deep learning techniques.
+Accurate liver and tumor segmentation is important for diagnosis, treatment planning, and disease monitoring. One of the major challenges in medical imaging is the limited availability of diverse annotated tumor data. To address this, this project combines:
 
-In addition to the core segmentation model, the project also includes a synthetic image pipeline that can be used to support data augmentation and experimentation when working with limited annotated medical imaging datasets.
+- **Segmentation model training and testing**
+- **3D synthetic tumor generation using GANs**
+- **Insertion of synthetic tumors into healthy liver CT scans**
+- **Creation of augmented liver-tumor datasets for experimentation**
 
-## Features
+This makes the project not only a segmentation repository, but also a **synthetic medical image augmentation pipeline** for improving model robustness on liver tumor detection tasks. :contentReference[oaicite:6]{index=6}
 
-- Liver and tumor segmentation using a deep learning model
-- AIM-UNet-inspired architecture for medical image segmentation
-- Training pipeline for CT scan volumes and segmentation masks
-- Testing pipeline for model evaluation
-- Synthetic image generation pipeline for experimentation and augmentation
-- Performance tracking using segmentation and classification metrics
-- Logging and checkpoint saving during training
+## Key Features
+
+- Liver and tumor segmentation from CT images
+- 3D synthetic tumor generation using a **multi-GAN pipeline**
+- Use of **DCGAN, WGAN, Aggregator, and Style Transfer modules**
+- Generation of synthetic tumor volumes and tumor masks
+- Insertion of synthetic tumors into healthy liver regions in real CT scans
+- Patch blending and seam reduction for more realistic composite volumes
+- Saving of augmented NIfTI volumes and segmentation masks
+- Training and evaluation workflows for segmentation experiments :contentReference[oaicite:7]{index=7} :contentReference[oaicite:8]{index=8}
 
 ## Repository Structure
 
@@ -26,6 +32,6 @@ In addition to the core segmentation model, the project also includes a syntheti
 Liver-Tumor-Segmentation/
 │
 ├── README.md
-├── train_orig_AIMUNetALF.py        # Model training script
-├── test_aimunet_orig_65.py         # Model testing/evaluation script
-└── Syn_Img_Pipeline_Code.py        # Synthetic image generation pipeline
+├── train_orig_AIMUNetALF.py        # Training script for liver/tumor segmentation
+├── test_aimunet_orig_65.py         # Testing/evaluation script
+└── Syn_Img_Pipeline_Code.py        # Synthetic 3D tumor generation and insertion pipeline
