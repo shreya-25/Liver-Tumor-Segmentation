@@ -11,6 +11,7 @@ import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
 import random
 import torchvision.transforms.functional as TF
+from torchvision.transforms import InterpolationMode
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, roc_auc_score, f1_score
 import matplotlib.pyplot as plt
@@ -18,7 +19,7 @@ import matplotlib.pyplot as plt
 # -----------------------------
 # Logging Configuration
 # -----------------------------
-results_dir = r"C:\Users\sagarwal4\Downloads\LTS_V1\AimUnet\Orig\After liver fixing\trainresult"
+results_dir = os.environ.get("LITS_RESULTS_DIR", r"<PATH_TO>\LTS_V1\AimUnet\Orig\After liver fixing\trainresult")
 os.makedirs(results_dir, exist_ok=True)
 
 LOG_PATH = os.path.join(results_dir, "train_AIMUNet.log")
@@ -28,7 +29,8 @@ logging.basicConfig(
     handlers=[logging.FileHandler(LOG_PATH, mode='w'), logging.StreamHandler()]
 )
 logger = logging.getLogger(__name__)
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda" if torch.cuda.is_available()
+                      else "mps" if torch.backends.mps.is_available() else "cpu")
 
 # -----------------------------
 # Data Utilities
@@ -44,6 +46,8 @@ def load_volume(image_path, mask_path, size=(256, 256)):
     vol = nib.load(image_path).get_fdata().astype(np.float32)
     vol = (vol + 200) / 400.0
     seg = nib.load(mask_path).get_fdata()
+    if os.environ.get("LITS_AXIAL") == "1":  # raw LiTS is (H, W, Z): slice along Z instead of axis 0
+        vol, seg = np.moveaxis(vol, 2, 0), np.moveaxis(seg, 2, 0)
     vol = (vol - vol.min()) / (vol.max() - vol.min() + 1e-8)
     images, masks = [], []
     for i in range(vol.shape[0]):
@@ -67,15 +71,15 @@ class LiverDataset(Dataset):
     def __getitem__(self, idx):
         img, msk = self.data[idx]
         img_pil = Image.fromarray((img[...,0]*255).astype(np.uint8))
-        msk_pil = Image.fromarray(msk[...,0].astype(np.uint8), mode='L')
+        msk_pil = Image.fromarray(msk[...,0].astype(np.uint8))
         if self.augment:
             if random.random() > 0.5:
                 img_pil, msk_pil = TF.hflip(img_pil), TF.hflip(msk_pil)
             if random.random() > 0.5:
                 img_pil, msk_pil = TF.vflip(img_pil), TF.vflip(msk_pil)
             angle = random.uniform(-10, 10)
-            img_pil = TF.rotate(img_pil, angle, resample=Image.BILINEAR)
-            msk_pil = TF.rotate(msk_pil, angle, resample=Image.NEAREST)
+            img_pil = TF.rotate(img_pil, angle, interpolation=InterpolationMode.BILINEAR)
+            msk_pil = TF.rotate(msk_pil, angle, interpolation=InterpolationMode.NEAREST)
         img_tensor = TF.to_tensor(img_pil)
         msk_tensor = torch.as_tensor(np.array(msk_pil), dtype=torch.long)
         return img_tensor, msk_tensor
@@ -182,6 +186,9 @@ class EarlyStopping:
 def train_model(data_path, epochs=50, batch_size=4, lr=1e-4, patience=7):
     # Prepare data
     vols, masks = get_volume_mask_paths(data_path)
+    max_vols = int(os.environ.get("LITS_MAX_VOLUMES", 0))  # 0 = use all volumes
+    if max_vols:
+        vols, masks = vols[:max_vols], masks[:max_vols]
     vt, vtest, mt, mtest = train_test_split(vols, masks, test_size=0.2, random_state=42)
     train_ds = LiverDataset(vt, mt, augment=True)
     test_ds  = LiverDataset(vtest, mtest, augment=False)
@@ -192,8 +199,10 @@ def train_model(data_path, epochs=50, batch_size=4, lr=1e-4, patience=7):
     weights = [(n_non/n_tumor) if ht else 1.0 for ht in has_tumor]
     sampler = WeightedRandomSampler(weights, num_samples=len(weights), replacement=True)
 
-    train_dl = DataLoader(train_ds, batch_size=batch_size, sampler=sampler, num_workers=4, pin_memory=True)
-    test_dl  = DataLoader(test_ds, batch_size=batch_size, shuffle=False,   num_workers=4, pin_memory=True)
+    nw = int(os.environ.get("LITS_NUM_WORKERS", 4))
+    pin = device.type == "cuda"
+    train_dl = DataLoader(train_ds, batch_size=batch_size, sampler=sampler, num_workers=nw, pin_memory=pin)
+    test_dl  = DataLoader(test_ds, batch_size=batch_size, shuffle=False,   num_workers=nw, pin_memory=pin)
 
     # Model, optimizer, losses
     model = AIM_UNet().to(device)
@@ -324,9 +333,9 @@ def train_model(data_path, epochs=50, batch_size=4, lr=1e-4, patience=7):
 
 if __name__ == "__main__":
     train_model(
-        r"C:\Users\sagarwal4\Downloads\LTS_V1\Dataset\trainOriginal_65",
-        epochs=50,
-        batch_size=4,
+        os.environ.get("LITS_DATA_DIR", r"<PATH_TO>\LTS_V1\Dataset\trainOriginal_65"),
+        epochs=int(os.environ.get("LITS_EPOCHS", 50)),
+        batch_size=int(os.environ.get("LITS_BATCH_SIZE", 4)),
         lr=1e-4,
         patience=7
     )
