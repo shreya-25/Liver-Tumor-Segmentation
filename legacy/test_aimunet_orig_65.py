@@ -14,8 +14,8 @@ import logging
 # -----------------------------
 # Paths (adjust as needed)
 # -----------------------------
-TEST_FOLDER = r"C:\Users\sagarwal4\Downloads\LTS_V1\Dataset\testOriginal_65"
-SAVE_DIR    = r"C:\Users\sagarwal4\Downloads\LTS_V1\AimUnet\Orig\Train_result"
+TEST_FOLDER = r"<PATH_TO>\LTS_V1\Dataset\testOriginal_65"
+SAVE_DIR    = r"<PATH_TO>\LTS_V1\AimUnet\Orig\Train_result"
 CHECKPOINT  = os.path.join(SAVE_DIR, "aim_unet_epoch_035.pt")
 
 LOG_PATH = os.path.join(SAVE_DIR, "test_AIMUNet.log")

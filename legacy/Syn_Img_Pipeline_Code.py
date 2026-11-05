@@ -28,9 +28,9 @@ from scipy.ndimage import map_coordinates
 # ─────────────────────────────────────────────────────────────────────────────
 # CONFIGURATION
 # ─────────────────────────────────────────────────────────────────────────────
-REAL_DATA_DIR = r"C:\Users\sagarwal4\Downloads\LTS_V1\Dataset\trainOriginal_65"
-BASE_OUTPUT   = r"C:\Users\sagarwal4\Downloads\LTS_V1\GAN\CodeResults28July"
-OUTPUT_DIR    = r"C:\Users\sagarwal4\Downloads\LTS_V1\GAN\SyntheticData28July"
+REAL_DATA_DIR = r"<PATH_TO>\LTS_V1\Dataset\trainOriginal_65"
+BASE_OUTPUT   = r"<PATH_TO>\LTS_V1\GAN\CodeResults28July"
+OUTPUT_DIR    = r"<PATH_TO>\LTS_V1\GAN\SyntheticData28July"
 PATCH_SIZE    = (64,64,64)
 VOXEL_SPACING = (1.0,1.0,1.0)
 HU_CLIP_RANGE = (-200,250)
@@ -727,9 +727,9 @@ if __name__ == "__main__":
 # # ─────────────────────────────────────────────────────────────────────────────
 # # CONFIGURATION
 # # ─────────────────────────────────────────────────────────────────────────────
-# REAL_DATA_DIR = r"C:\Users\sagarwal4\Downloads\LTS_V1\Dataset\trainOriginal_65"
-# BASE_OUTPUT   = r"C:\Users\sagarwal4\Downloads\LTS_V1\Synthetic Image Creation\Synthetic Output\Code outputV1"
-# OUTPUT_DIR    = r"C:\Users\sagarwal4\Downloads\LTS_V1\Synthetic Image Creation\Synthetic Output\Synthetic DataV1"
+# REAL_DATA_DIR = r"<PATH_TO>\LTS_V1\Dataset\trainOriginal_65"
+# BASE_OUTPUT   = r"<PATH_TO>\LTS_V1\Synthetic Image Creation\Synthetic Output\Code outputV1"
+# OUTPUT_DIR    = r"<PATH_TO>\LTS_V1\Synthetic Image Creation\Synthetic Output\Synthetic DataV1"
 # PATCH_SIZE    = (64,64,64)
 # VOXEL_SPACING = (1.0,1.0,1.0)
 # HU_CLIP_RANGE = (-200,250)

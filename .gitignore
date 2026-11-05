@@ -1,0 +1,52 @@
+# data, results and environments (large or machine-specific; never commit)
+/data/
+/results/
+.venv/
+venv/
+env/
+
+# python / notebooks
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# model checkpoints, arrays and imaging data
+*.pt
+*.pth
+*.npy
+*.npz
+*.nii
+*.nii.gz
+
+# secrets and credentials (never commit)
+.env
+.env.*
+*.pem
+*.key
+
+# archives and local scratch
+*.zip
+tmp/
+scratch/
+*.tmp
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# results, reports, figures and other non-code files: kept locally, not pushed
+/docs/*
+!/docs/RUNNING.md
+/analysis/figures/
+/analysis/output/
+/analysis/extra_scripts/**/*.json
+/analysis/extra_scripts/**/*.txt
+/LiTS_Pipeline_Showcase.ipynb
+*.png
+*.jpg
+*.jpeg
+*.pdf
+*.log
+*.csv
+*.out
